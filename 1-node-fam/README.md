@@ -1,3 +1,3 @@
 #Preview
 
-![alt text](img.png)
+![alt text](./imagies/img.png)
