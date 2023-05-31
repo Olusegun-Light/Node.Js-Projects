@@ -1,0 +1,2 @@
+To update nodejs to lts version use
+nvm install --lts
