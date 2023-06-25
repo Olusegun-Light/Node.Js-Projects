@@ -1,4 +1,11 @@
 const Tour = require("./../models/tourModel");
+const APIFeatures = require("./../utils/apiFeatures");
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = "5";
+  req.query.sort = "-ratingsAverage,price";
+  req.query.fields = "name,price,ratingsAverage,summary,difficulty";
+  next();
+};
 
 // Import database as JSON
 // const tours = JSON.parse(
@@ -9,16 +16,14 @@ const Tour = require("./../models/tourModel");
 
 exports.getAllTours = async (req, res) => {
   try {
-    // Build a Query
-    const queryObject = { ...req.query };
-    const excludedFields = ["page", "sort", "limit", "felids"];
-    excludedFields.forEach((el) => delete queryObject[el]);
-
-    // Get all tour from tours collection
-    const query = Tour.find(queryObject);
-
+    console.log(req.query);
     // Execute Query
-    const tours = await query;
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitsFields()
+      .paginate();
+    const tours = await features.query;
 
     // Send response
     res.status(200).json({
