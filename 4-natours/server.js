@@ -2,6 +2,14 @@ const mongoose = require("mongoose");
 const app = require("./app");
 const dotenv = require("dotenv");
 
+// Uncaught Exception
+process.on("uncaughtException", (err) => {
+  console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
+  console.log(err.name, err.message);
+  // 0 for success 1 for uncaught exception
+  process.exit(1);
+});
+
 dotenv.config({ path: "./config.env" });
 // console.log(process.env);
 
@@ -19,7 +27,7 @@ mongoose
   })
   .then(() => {
     // console.log(con.connections);
-    console.log("db connection successful 🤤");
+    console.log(":: Database  Connector Established ::");
   });
 
 // const testTour = new Tour({
@@ -39,6 +47,17 @@ mongoose
 
 // Set up server
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
+});
+
+// Unhandled Rejection
+process.on("unhandledRejection", (err) => {
+  console.log(err.name, err.message);
+  console.log("UNHANDLED REJECTION! 💥 Shuting down...");
+  // close() give server time to finish pending request at that time
+  server.close(() => {
+    // 0 for success 1 for uncaught exception
+    process.exit(1);
+  });
 });
